@@ -1,11 +1,11 @@
 # SSLCheck
 Just a tool to help automate work tasks
 
-V2: just SSL cipher suites
+V2: SSL cipher suites only
 
 V3: All sslyze checks (outputs a little wonky but works needs more context and better template..)
-# Requirerments
-sslyze python module & well python dah. i will warn you if your missing anything
+# Requirerments.
+sslyze python module & well python dah. It will warn you if your missing anything.
 # How to use..
 Just run the app like this in a terminal.
 python testsslyzev2.py
