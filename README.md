@@ -1,6 +1,8 @@
 # SSLCheck
 Just a tool to help automate work tasks
 
+v4: Main project, all seems to be working ok now and using Mozilla intermediate standard for checks.
+
 V2: SSL cipher suites only
 
 V3: All sslyze checks (outputs a little wonky but works needs more context and better template..)
