@@ -1,7 +1,7 @@
 # SSLCheck
 Just a tool to help automate work tasks
 
-testsslyze.py: Main project, all seems to be working ok now and using Mozilla intermediate standard for checks.
+sslcheck.py: Main project, all seems to be working ok now and using Mozilla intermediate standard for checks.
 
 # Requirerments.
 sslyze python module & well python dah. It will warn you if your missing anything.
