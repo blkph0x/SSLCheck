@@ -1,16 +1,13 @@
 # SSLCheck
 Just a tool to help automate work tasks
 
-v4: Main project, all seems to be working ok now and using Mozilla intermediate standard for checks.
+testsslyze.py: Main project, all seems to be working ok now and using Mozilla intermediate standard for checks.
 
-V2: SSL cipher suites only
-
-V3: All sslyze checks (outputs a little wonky but works needs more context and better template..)
 # Requirerments.
 sslyze python module & well python dah. It will warn you if your missing anything.
 # How to use..
 Just run the app like this in a terminal.
-python testsslyzev2.py
+python testsslyze.py
 
 It will ask for a server you can enter as many as you like seperated with a comma , ;)
 # TODO.
