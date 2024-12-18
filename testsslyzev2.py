@@ -38,6 +38,8 @@ MOZILLA_INTERMEDIATE_CIPHERS = {
         "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
         "TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
     },
+    "TLS 1.1": set(),
+    "TLS 1.0": set(),
 }
 
 def print_ascii_banner():
@@ -88,18 +90,6 @@ def write_results_to_docx(results: dict, output_file: str):
             row_cells[0].text = cipher
             row_cells[1].text = status
 
-    doc.add_heading("Additional Checks", level=2)
-    table = doc.add_table(rows=1, cols=3)
-    hdr_cells = table.rows[0].cells
-    hdr_cells[0].text = "Check"
-    hdr_cells[1].text = "Result"
-    hdr_cells[2].text = "Details"
-    for check_name, result, details in results["additional_checks"]:
-        row_cells = table.add_row().cells
-        row_cells[0].text = check_name
-        row_cells[1].text = result
-        row_cells[2].text = details
-
     doc.save(output_file)
     print(f"\nResults saved to {output_file}")
 
@@ -120,8 +110,10 @@ def main() -> None:
             all_scan_requests.append(ServerScanRequest(
                 server_location=ServerNetworkLocation(hostname=server),
                 scan_commands=[
-                    ScanCommand.TLS_1_3_CIPHER_SUITES,
+                    ScanCommand.TLS_1_0_CIPHER_SUITES,
+                    ScanCommand.TLS_1_1_CIPHER_SUITES,
                     ScanCommand.TLS_1_2_CIPHER_SUITES,
+                    ScanCommand.TLS_1_3_CIPHER_SUITES,
                     ScanCommand.CERTIFICATE_INFO,
                 ]
             ))
@@ -140,11 +132,13 @@ def main() -> None:
             print(f"Error: Could not connect to {hostname}: {server_scan_result.connectivity_error_trace}")
             continue
 
-        result_entry = {"hostname": hostname, "ciphers": {}, "additional_checks": []}
+        result_entry = {"hostname": hostname, "ciphers": {}}
 
         for version, command in [
             ("TLS 1.3", server_scan_result.scan_result.tls_1_3_cipher_suites),
             ("TLS 1.2", server_scan_result.scan_result.tls_1_2_cipher_suites),
+            ("TLS 1.1", server_scan_result.scan_result.tls_1_1_cipher_suites),
+            ("TLS 1.0", server_scan_result.scan_result.tls_1_0_cipher_suites),
         ]:
             if command:
                 if hasattr(command.result, "accepted_cipher_suites"):
@@ -156,19 +150,6 @@ def main() -> None:
                 else:
                     print(f"{Fore.YELLOW}No cipher suites available for {version}.{Style.RESET_ALL}")
                     result_entry["ciphers"][version] = []
-
-        additional_checks = {
-            "Certificate Valid": server_scan_result.scan_result.certificate_info,
-        }
-
-        for check_name, attempt in additional_checks.items():
-            if attempt:
-                details = str(attempt.certificate_chain) if hasattr(attempt, 'certificate_chain') else "N/A"
-                result_entry["additional_checks"].append((check_name, "SUCCESS", details))
-                print(f"{check_name}: {Fore.GREEN}SUCCESS{Style.RESET_ALL} - {details}")
-            else:
-                result_entry["additional_checks"].append((check_name, "FAILED", "No details available"))
-                print(f"{check_name}: {Fore.RED}FAILED{Style.RESET_ALL}")
 
         output_file = f"{hostname}_ssl_scan_results.docx"
         write_results_to_docx(result_entry, output_file)
